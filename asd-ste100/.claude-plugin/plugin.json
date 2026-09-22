@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
+  "name": "asd-ste100",
+  "displayName": "ASD-STE100",
+  "version": "2.1.0",
+  "description": "ASD-STE100 Simplified Technical English for every text a human reads, and the reply shape a reader with ADHD can act on. Ships a linter and five hooks that check the words before they reach a reader.",
+  "author": {
+    "name": "DoctorDystopia"
+  },
+  "license": "MIT",
+  "keywords": [
+    "writing",
+    "style",
+    "simplified-technical-english",
+    "ste",
+    "linter",
+    "documentation"
+  ],
+  "hooks": "./hooks/hooks.json"
+}

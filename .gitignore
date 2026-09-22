@@ -1,0 +1,18 @@
+*.pyc
+__pycache__/
+.DS_Store
+.env
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# OS metadata
+.DS_Store
+Thumbs.db
+
+# Build artifacts & logs
+*.pyc
+__pycache__/
+*.log

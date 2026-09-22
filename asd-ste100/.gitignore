@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+
+# install.py writes this into the INSTALLED copy. It records where that copy
+# came from, so it belongs to an install, not to the source.
+.ste-installed
