@@ -1,0 +1,27 @@
+{
+  "$schema": "https://code.claude.com/schemas/marketplace.json",
+  "name": "agent-skills",
+  "owner": {
+    "name": "DoctorDystopia",
+    "url": "https://github.com/DoctorDystopia"
+  },
+  "description": "Agent skills, each one a Claude Code plugin in its own directory.",
+  "plugins": [
+    {
+      "name": "asd-ste100",
+      "source": "./asd-ste100",
+      "displayName": "ASD-STE100",
+      "description": "ASD-STE100 Simplified Technical English for every text a human reads, and the reply shape a reader with ADHD can act on. Ships a linter and five hooks that check the words before they reach a reader.",
+      "license": "MIT",
+      "keywords": [
+        "writing",
+        "style",
+        "simplified-technical-english",
+        "ste",
+        "linter",
+        "documentation"
+      ],
+      "category": "productivity"
+    }
+  ]
+}

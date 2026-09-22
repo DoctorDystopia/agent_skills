@@ -24,11 +24,12 @@ conditions, two model families, scored as violations per 100 words.
 The full experiment, the data, and the 17-minute episode:
 [chele.bi/videos/the-cure-for-ai-slop](https://chele.bi/videos/the-cure-for-ai-slop)
 
-## This repository is the source
+## This directory is the source
 
-`~/.claude/skills/asd-ste100` is a COPY that `install.py` writes. Make each
-change here, then run the script. An edit made in the copy is lost on the next
-run:
+This skill is one plugin of the `agent_skills` repository, at
+`agent_skills/asd-ste100`. `~/.claude/skills/asd-ste100` is a COPY that
+`install.py` writes. Make each change here, then run the script. An edit made
+in the copy is lost on the next run:
 
 ```
 python install.py --check      # name each file where the two disagree
@@ -39,28 +40,30 @@ python install.py              # copy, then arm the hooks
 
 Pick one route. Do not stack them: two routes register every hook two times.
 
-**Route 1, the plugin.** Clone this repository into your skills directory.
-Claude Code reads `.claude-plugin/plugin.json`, loads it as
-`asd-ste100@skills-dir`, and registers `hooks/hooks.json` itself. It edits no
-settings file:
+**Route 1, the marketplace.** The repository root holds
+`.claude-plugin/marketplace.json`, so Claude Code installs this skill from
+GitHub. It registers `hooks/hooks.json` itself and edits no settings file:
 
 ```
-git clone <this repo> "$HOME/.claude/skills/asd-ste100"
+/plugin marketplace add DoctorDystopia/agent_skills
+/plugin install asd-ste100@agent-skills
 ```
 
-Start a new session. `claude plugin list` names it. `claude plugin validate .`
-checks the manifest. Use this route on a machine that holds no copy yet.
+Start a new session. `claude plugin list` names it. Use this route on a
+machine that holds no copy yet.
 
 **Route 2, the settings file.** `install.py` copies the skill and writes five
 hook entries into `~/.claude/settings.json`. The copy carries no
 `.claude-plugin`, so the plugin route stays off and the two cannot stack:
 
 ```
+git clone https://github.com/DoctorDystopia/agent_skills.git
+cd agent_skills/asd-ste100
 python install.py
 ```
 
-Use this route when the source lives outside the skills directory, as it does
-on the machine that this repository was built on.
+Use this route to develop the skill. The repository stays where you can edit
+it, and `--check` reports any drift from the installed copy.
 
 **Route 3, no tooling.** Paste `SKILL.md` into the system prompt. The skill
 works without the linter. The linter closes the loop.
