@@ -46,10 +46,11 @@ The team is required to spin up the service. The file is closed by the hook.
 - six
 """
 
-_LAYER2 = """Great question. The parser is slow.
+_LAYER2 = """Great question. Here's what I found. The parser is slow.
 
 I have now fixed it, and it will take a while. Perhaps the cache helps.
 Unfortunately the first run failed. Let me know if you need anything else.
+Say the word and I will do it.
 """
 
 _CORPUS = ["README.md", "SKILL.md", "output-style.md",

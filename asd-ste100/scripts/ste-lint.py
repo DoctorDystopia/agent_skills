@@ -10,7 +10,9 @@ SCORE_VERSION = 2
 # Shape v1: the Layer 2 checks (skill 2.0). These count the ORDER of a reply to
 # a person, not the words. They are reported apart from the score and never
 # enter `total`, so `total_per100w` keeps one meaning across skill versions.
-SHAPE_VERSION = 1
+# Shape v2: adds the announcement count and three closers. A scan of 758
+# replies gave the phrases. A v2 shape total can be higher than a v1 total.
+SHAPE_VERSION = 2
 
 MARKETING = ["seamless","seamlessly","robust","powerful","cutting-edge","effortless","effortlessly",
     "world-class","next-generation","revolutionary","blazing","lightning-fast","elegant","delightful",
@@ -45,9 +47,15 @@ may might must should shall it its their your our his her they we you i""".split
 OPENERS = ["great question","good question","let me","i'll","i will","sure","certainly",
     "absolutely","looking at your","to answer your question","happy to help",
     "i'd be happy to","that's a great","first,","alright","okay so","let's"]
+# A phrase that only tells the reader what comes next.
+ANNOUNCE = ["here's what","here is what","here's where","here is where",
+    "worth knowing","worth leading with","quick confirmation"]
+# "I continue when the run ends" is not a closer. It gives the next step of a
+# run that is in progress.
 CLOSERS = ["let me know if","hope this helps","hope that helps","happy to clarify",
     "feel free to ask","feel free to reach","anything else","if you have any questions",
-    "if you have any other questions","i'm here to help","do not hesitate","don't hesitate"]
+    "if you have any other questions","i'm here to help","do not hesitate","don't hesitate",
+    "say the word","waiting on your","standing by"]
 RECAP = ["to summarize","in summary","to recap","as a recap","in conclusion","to sum up",
     "i have now","i've now","overall,"]
 # Only hedges that carry no fact. A qualifier that bounds a claim is not here.
@@ -208,13 +216,14 @@ def shape(raw):
     sents = sentences(text)
     s = {}
     s["preamble_opener"] = count_in(sents[0], OPENERS)[0] if sents else 0
+    s["announcement"], ah = count_ci(text, ANNOUNCE)
     s["closer"], ch = count_ci(text, CLOSERS)
     s["recap_marker"], rh = count_ci(text, RECAP)
     s["hedge"], hh = count_ci(text, HEDGE)
     s["vague_estimate"], vh = count_ci(text, VAGUE)
     s["error_softener"], sh = count_ci(text, SOFTENER)
     s["action_list(>5)"] = len(long_lists(blank_code(raw)))
-    return s, list(dict.fromkeys(ch + rh + hh + vh + sh))[:6]
+    return s, list(dict.fromkeys(ah + ch + rh + hh + vh + sh))[:6]
 
 
 def lint(text, strict=False):
@@ -294,6 +303,7 @@ RULE_HELP = {
     "em_dash(slop-marker)": "Marker only. Use a comma, a colon, or a full stop.",
     "noun_train(>=4w,marker)": "Marker only. A noun cluster gets three words at most.",
     "preamble_opener": "Delete the opener. Start with the action, the command, or the path.",
+    "announcement": "Delete the announcement. Give the fact that it points to.",
     "closer": "Delete the closer. Stop when the answer is done.",
     "recap_marker": "Delete the recap. The reader read it one screen above.",
     "hedge": "Cut a hedge that carries no fact. Keep a qualifier that bounds a claim.",
@@ -442,7 +452,8 @@ def locate(raw, strict=False):
             if m:
                 add(_fragment_line(text, starts, first[0]),
                     "preamble_opener", m.group(0), layer=2)
-    for category, phrases in (("closer", CLOSERS), ("recap_marker", RECAP),
+    for category, phrases in (("announcement", ANNOUNCE),
+                              ("closer", CLOSERS), ("recap_marker", RECAP),
                               ("hedge", HEDGE), ("vague_estimate", VAGUE),
                               ("error_softener", SOFTENER)):
         for offset, hit in _phrase_hits(shape_text, phrases):

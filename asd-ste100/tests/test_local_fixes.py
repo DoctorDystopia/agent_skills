@@ -63,6 +63,37 @@ class UnwrapTest(unittest.TestCase):
         self.assertEqual(LINT.long_lists(items), [3])
 
 
+class ShapePhraseTest(unittest.TestCase):
+
+    def _shape(self, text):
+        return LINT.lint(text)["shape"]
+
+    def test_an_announcement_counts_in_any_sentence(self):
+        shape = self._shape("The run is in progress. Here's where things stand:\n")
+        self.assertEqual(shape["announcement"], 1)
+        self.assertEqual(shape["preamble_opener"], 0)
+
+    def test_an_announcement_without_a_contraction_counts(self):
+        self.assertEqual(self._shape("Here is what I found.\n")["announcement"], 1)
+
+    def test_an_offer_with_no_information_is_a_closer(self):
+        for text in ("Say the word and I will do it.\n",
+                     "Waiting on your go-ahead before I touch a file.\n",
+                     "Standing by.\n"):
+            with self.subTest(text=text):
+                self.assertEqual(self._shape(text)["closer"], 1)
+
+    def test_the_next_step_of_a_run_is_not_a_closer(self):
+        for text in ("I continue when the run ends.\n",
+                     "I will report when it completes.\n"):
+            with self.subTest(text=text):
+                self.assertEqual(self._shape(text)["closer"], 0)
+
+    def test_a_result_sentence_has_no_shape_count(self):
+        shape = self._shape("All 187 tests pass. The fix is in the parser.\n")
+        self.assertEqual(sum(shape.values()), 0)
+
+
 class PregateCommitMessageTest(unittest.TestCase):
 
     def test_powershell_single_quoted_here_string(self):
