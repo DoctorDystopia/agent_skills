@@ -78,7 +78,8 @@ test("declares all plugin hooks in cross-platform exec form", () => {
 	const hooks = Object.values(config.hooks).flatMap((groups) =>
 		groups.flatMap((group) => group.hooks),
 	);
-	assert.equal(hooks.length, 4);
+	// Five events, four scripts: Stop and SubagentStop both run ste-gate.py.
+	assert.equal(hooks.length, 5);
 	for (const hook of hooks) {
 		assert.equal(hook.command, "node");
 		assert.equal(hook.args.length, 2);
@@ -132,15 +133,14 @@ test("writes cross-platform hooks from the standalone installer", (t) => {
 	assert.equal(result.status, 0, result.stderr);
 	const output = JSON.parse(result.stdout);
 	assert.equal(output.legacy_recognized, true);
-	assert.deepEqual(output.recognized, [true, true, true, true]);
+	assert.deepEqual(output.recognized, [true, true, true, true, true]);
+	// The installer writes each hook as one command string, with no "args".
 	for (const value of Object.values(output.hooks)) {
 		const hook = value.entry.hooks[0];
-		assert.equal(hook.command, "node");
-		assert.equal(hook.args.length, 2);
+		assert.equal(hook.args, undefined);
 		assert.match(
-			hook.args[0].replaceAll("\\", "/"),
-			/\/hooks\/run-python\.cjs$/,
+			hook.command,
+			/^node "[^"]*\/hooks\/run-python\.cjs" "[^"]*\/hooks\/ste-[a-z]+\.py"$/,
 		);
-		assert.match(hook.args[1].replaceAll("\\", "/"), /\/hooks\/ste-.*\.py$/);
 	}
 });
